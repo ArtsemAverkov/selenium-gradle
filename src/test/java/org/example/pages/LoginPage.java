@@ -1,5 +1,6 @@
 package org.example.pages;
 
+import org.example.config.YmlConfigReader;
 import org.example.core.BaseTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -18,11 +19,13 @@ public class LoginPage extends BaseTest{
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver,
+                Duration.ofSeconds(YmlConfigReader.getInt("timeout")));
     }
 
     public void open(){
-        driver.get("https://the-internet.herokuapp.com/login");
+       // driver.get("https://the-internet.herokuapp.com/login");
+        driver.get(YmlConfigReader.getString("baseUrl"));
     }
 
     public void login(String user, String pass) {

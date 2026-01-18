@@ -10,11 +10,9 @@ repositories {
 }
 
 dependencies {
-// Selenium
+    testImplementation("org.yaml:snakeyaml:2.2")
     testImplementation("org.seleniumhq.selenium:selenium-java:4.17.0")
-// TestNG
     testImplementation("org.testng:testng:7.9.0")
-// WebDriverManager
     testImplementation("io.github.bonigarcia:webdrivermanager:5.6.3")
 }
 
