@@ -1,14 +1,10 @@
 package org.example.tests;
 
+import org.example.core.BaseTest;
 import org.example.pages.LoginPage;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.Test;
 
-public class LoginTest {
-
-    WebDriver driver = new ChromeDriver(); // или другой драйвер
-    LoginPage loginPage = new LoginPage(driver);
+public class LoginTest extends BaseTest {
 
     @Test
     public void validLoginTest(){
