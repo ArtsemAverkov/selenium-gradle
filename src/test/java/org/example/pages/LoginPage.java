@@ -1,5 +1,6 @@
 package org.example.pages;
 
+import io.qameta.allure.Step;
 import org.example.config.YmlConfigReader;
 import org.example.core.BaseTest;
 import org.openqa.selenium.By;
@@ -23,11 +24,12 @@ public class LoginPage extends BaseTest{
                 Duration.ofSeconds(YmlConfigReader.getInt("timeout")));
     }
 
+    @Step("Открываем страницу логина")
     public void open(){
-       // driver.get("https://the-internet.herokuapp.com/login");
         driver.get(YmlConfigReader.getString("baseUrl"));
     }
 
+    @Step("Логин: {user}")
     public void login(String user, String pass) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(username))
                 .sendKeys(user);
