@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+
+  selenium-hub:
+    image: selenium/hub:4.17.0
+    container_name: selenium-hub
+    platform: linux/amd64
+    ports:
+      - "4444:4444"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chrome:
+    image: selenium/node-chrome:4.17.0
+    container_name: selenium-node-chrome
+    platform: linux/amd64
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 1
+    shm_size: 2gb
+
+  test-runner:
+    container_name: selenium-tests
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile
+    platform: linux/amd64
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+      chrome:
+        condition: service_started
+    environment:
+      RUN_MODE: remote
+      BROWSER: chrome
+    working_dir: /app
+    volumes:
+      - ./build:/app/build
+      - ./allure-results:/app/build/allure-results
+      - ./allure-report:/app/build/reports/allure-report
+    command: >
+      sh -c "./gradlew test
+      -Drun.mode=remote
+      -Dbrowser=chrome
+      -Dheadless=true
+      -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"

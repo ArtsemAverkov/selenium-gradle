@@ -1,56 +1,50 @@
 pipeline {
-    agent any
-
-    // Вариант 1: Использовать JDK 11 (рекомендуется для Selenium)
-    environment {
-        JAVA_HOME = '/Library/Java/JavaVirtualMachines/jdk-11.0.12.jdk/Contents/Home'
-        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+    agent {
+        docker {
+            image 'openjdk:11-jdk-slim'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
     }
 
-    // Вариант 2: Или использовать JDK 8
-    // environment {
-    //     JAVA_HOME = '/Library/Java/JavaVirtualMachines/liberica-jdk-8.jdk/Contents/Home'
-    //     PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
-    // }
-
-    // Вариант 3: Или просто убрать tools блок и позволить Jenkins использовать системную Java
-
-    parameters {
-        choice(
-            name: 'browser',
-            choices: ['chrome', 'firefox', 'edge'],
-            description: 'Выберите браузер для тестов'
-        )
+    environment {
+        DOCKER_HOST = 'unix:///var/run/docker.sock'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Start Selenium Grid') {
             steps {
-                git branch: 'master',
-                    url: 'https://github.com/ArtsemAverkov/selenium-gradle.git'
+                sh '''
+                    docker network create test-network || true
+                    docker run -d --name selenium-hub --net test-network \
+                        -p 4444:4444 selenium/hub:4.8.0
+                    docker run -d --name chrome --net test-network \
+                        --shm-size="2g" \
+                        -e SE_EVENT_BUS_HOST=selenium-hub \
+                        selenium/node-chrome:4.8.0
+                '''
             }
         }
 
-        stage('Build') {
+        stage('Run Tests') {
             steps {
-                sh './gradlew clean compileJava'
+                sh './gradlew test -Dbrowser=${params.browser} -Dselenium.remote=true -Dselenium.host=selenium-hub -Dselenium.port=4444'
             }
         }
 
-        stage('Test') {
+        stage('Allure Report') {
             steps {
-                script {
-                    echo "Running tests with browser: ${params.browser}"
-                    sh "./gradlew test -Dbrowser=${params.browser}"
-                }
+                sh './gradlew allureReport'
+                allure includeProperties: false, jdk: '', results: [[path: 'build/allure-results']]
             }
         }
-    }
 
-    post {
-        always {
-            junit 'build/test-results/test/**/*.xml'
-            cleanWs()  // Очистить workspace после выполнения
+        stage('Cleanup') {
+            steps {
+                sh '''
+                    docker stop chrome selenium-hub || true
+                    docker rm chrome selenium-hub || true
+                '''
+            }
         }
     }
 }
