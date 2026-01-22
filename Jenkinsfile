@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'openjdk:11-jdk'
+            image 'eclipse-temurin:11-jdk'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
