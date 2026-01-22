@@ -10,7 +10,7 @@ pipeline {
         DOCKER_HOST = 'unix:///var/run/docker.sock'
     }
 
-    stages {  // <-- ВСЕ stage должны быть здесь
+    stages {
 
         stage('Start Selenium Grid') {
             steps {
