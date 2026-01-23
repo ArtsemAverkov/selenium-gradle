@@ -1,2 +1,2 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Thu Jan 22 19:29:58 UTC 2026","Thu Jan 22 19:30:06 UTC 2026","7872","Gradle suite","Gradle test","org.example.tests.LoginTest","org.example.tests.LoginTest","validLoginTest","validLoginTest",""
+"passed","Fri Jan 23 16:43:16 UTC 2026","Fri Jan 23 16:43:24 UTC 2026","8364","Gradle suite","Gradle test","org.example.tests.LoginTest","org.example.tests.LoginTest","validLoginTest","validLoginTest",""
