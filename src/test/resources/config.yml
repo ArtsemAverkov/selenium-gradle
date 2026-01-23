@@ -1,4 +1,4 @@
 browser: chrome
 baseUrl: "https://the-internet.herokuapp.com/login"
-headless: true
+headless: false
 timeout: 10
