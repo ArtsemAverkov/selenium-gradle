@@ -68,7 +68,8 @@
 browser: chrome
 headless: false
 baseUrl: https://example.com
-
+```
+---
  Запуск тестов
 Локальный запуск (без Docker)
 Запуск тестов в локальном Chrome:
